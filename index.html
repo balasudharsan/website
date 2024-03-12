@@ -1,0 +1,214 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Document</title>
+</head>
+<body>
+    <p id="demo"></p>
+    <div class="search">
+        <input type="text" placeholder="entername" id="input-value"><br><br>
+        <button id="search-button">search</button>
+        <button id="delete-button">Delete</button>
+    </div><br><br>
+
+    <fieldset>
+        <legend>ceatedata</legend>
+        <label for="name"></label>
+        <input type="text" id="name" name="name" required><br><br>
+        <input type="text" id="cars" name="cars" placeholder="separate cars by comma" required><br><br>
+        <button id="createbtn">create</button>
+        <button id="update">Update</button>
+    </fieldset><br><br>
+
+    <fieldset>
+        <legend>Loginform</legend>
+        <input type="email" id="email-input">
+        <br><br>
+        <input type="password" id="password-input">
+        <br><br>
+        <button id="loginbutton">Login</button>
+    </fieldset>
+
+    <script>
+
+        const searchbutton=document.getElementById("search-button");
+        const input=document.getElementById("input-value");
+        const createbutton=document.getElementById('createbtn');
+        const deleteButton=document.getElementById('delete-button');
+        const updateButton=document.getElementById('update');
+        const loginButton=document.getElementById('loginbutton');
+
+        
+
+        const authToken = '';
+
+        function createdata() {
+            const name = document.getElementById('name').value;
+            const cars = document.getElementById('cars').value.split(',');
+
+            const data = {
+                name,
+                cars,
+                authToken,
+            };
+
+            const options = {
+                method: 'POST',
+                headers: {
+                    'Content-Type': 'application/json'
+                },
+                body: JSON.stringify(data)
+            };
+
+            fetch('/api/data', options)
+                .then((response) => response.json())
+                .then((response) => console.log(response))
+                .catch((error) => console.error('Error:', error));
+        }
+
+
+        function searchdata() {
+        const inputvalue = input.value; // Assuming there's an input element with id 'input'
+
+        const options = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ inputValue: inputvalue })
+        };
+
+        fetch('/api/data', options)
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then((data) => {
+                console.log(data);
+                const tag = document.getElementById('demo');
+                if (data.database) {
+                    tag.innerText = data.database;
+                } else {
+                    tag.innerText = "NOT FOUND";
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                const tag = document.getElementById('demo');
+                tag.innerText = "Error occurred";
+            });
+        }
+
+        function deletedata() {
+        const inputValue = document.getElementById('input-value').value;
+
+        const options = {
+            method: 'DELETE',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify({ inputValue: inputValue })
+        };
+
+        fetch('/api/data', options)
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then((data) => {
+                console.log(data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+
+
+        function updatedata() {
+        const name = document.getElementById('name').value;
+        const cars = document.getElementById('cars').value.split(',');
+
+        const data = {
+            name,
+            cars
+        };
+
+        const options = {
+            method: 'PUT',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(data)
+        };
+
+        fetch('/api/data', options)
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then((data) => {
+                console.log(data);
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+            });
+        }
+
+        
+
+        function loginuser(){
+        const email = document.getElementById('email-input').value;
+        const password = document.getElementById('password-input').value;
+
+        const bodydata = {
+            email,
+            password,
+            authToken, // Include authToken in the bodydata
+        };
+        const options = {
+            method: 'POST',
+            headers: {
+                'Content-Type': 'application/json'
+            },
+            body: JSON.stringify(bodydata)
+        };
+
+        fetch('/api/data', options)
+            .then((response) => {
+                if (!response.ok) {
+                    throw new Error('Network response was not ok');
+                }
+                return response.json();
+            })
+            .then((response) => {
+                if (response.status) {
+                    alert("Login Successful");
+                    authToken = response.token; // Update authToken with the received token
+                } else {
+                    alert("Something Error");
+                }
+            })
+            .catch((error) => {
+                console.error('Error:', error);
+                alert("Something Error");
+            });
+        }
+
+        searchbutton.addEventListener('click',searchdata)
+        createbutton.addEventListener('click',createdata)
+        deleteButton.addEventListener('click',deletedata)
+        updateButton.addEventListener('click',updatedata)
+        loginButton.addEventListener('click',loginuser)
+
+    </script>
+    
+</body>
+</html>
